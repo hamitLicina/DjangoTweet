@@ -13,6 +13,9 @@
     <div class="card-body">
       <p class="card-text">{{tweet.message}}</p>
     </div>
+    {% if tweet.username == user %}
+    <a href="{% url 'tweetapp:deletetweet' tweet_id = tweet.id %}" class="btn btn-danger">Delete</a>
+    {% endif %}
   </div>
     {% endfor %} 
 </div>

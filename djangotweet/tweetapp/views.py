@@ -53,7 +53,16 @@ def addtweetbymodelform(request):
         form = forms.AddTweetModelForm()
         return render(request, 'tweetapp/addtweetbymodelform.html', context={'form': form})
     
+@login_required(login_url='/login')
+def deletetweet(request, tweet_id):
+    tweet = models.Tweet.objects.get(pk=tweet_id)
+    if request.method == 'POST':
+        tweet.delete()
+        return redirect(reverse('tweetapp:listtweet'))
+
+
 class SignUpView(CreateView):
     template_name = 'registration/signup.html'
     form_class = UserCreationForm
     success_url = reverse_lazy('/login')
+
