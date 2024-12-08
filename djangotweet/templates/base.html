@@ -46,6 +46,23 @@
             >
           </li>
         </ul>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto"> <!-- 'ms-auto' aligns items to the right -->
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}?next=/">Logout</a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tweetapp:signup' %}">Signup</a>
+            </li>
+            
+          </ul>
+        </div>
+      
         <button
           class="navbar-toggler"
           type="button"
@@ -90,6 +107,11 @@
                 <a class="nav-link" href="{% url 'logout' %}?next=/" >Logout</a>
               </li>
             </div>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'tweetapp:signup' %}" >Signup</a>
+            </li>
+          </div>
 
             {% comment %}
             <li class="nav-item">

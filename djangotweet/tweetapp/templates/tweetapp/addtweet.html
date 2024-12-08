@@ -5,11 +5,11 @@
 <h1> Add Tweet Page </h1>
 <form action="" method="POST" >
     {% csrf_token %} 
-    <div class="mb-3">
+    {% comment %} <div class="mb-3">
       <label for="nickname" class="form-label">Nickname</label>
       <input type="text" class="form-control" id="nickname" name="nickname">
       <div id="nickname" class="form-text">We'll never share your Nickname with anyone else.</div>
-    </div>
+    </div> {% endcomment %}
     <div class="mb-3">
       <label for="message" class="form-label">Message</label>
       <input type="text" class="form-control" id="message" name="message">
