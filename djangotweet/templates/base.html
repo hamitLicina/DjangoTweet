@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}DjangoTweet{% endblock %}</title>
+    <title>{% block title %}{{ user.username }}'s Dashboard{% endblock %}</title>
     <link rel="stylesheet" href="{% static "tweetapp/customform.css" %}" >
     <!-- Bootstrap CSS -->
     <link
@@ -49,17 +49,18 @@
         
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto"> <!-- 'ms-auto' aligns items to the right -->
-            <li class="nav-item">
+            {% if user.is_authenticated %} 
+            <li class="nav-item"> 
               <a class="nav-link" href="{% url 'logout' %}?next=/">Logout</a>
             </li>
-            
+            {% else %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">Login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'tweetapp:signup' %}">Signup</a>
             </li>
-            
+            {% endif %}
           </ul>
         </div>
       
@@ -75,56 +76,18 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
+          <ul class="navbar-nav ms-auto">{% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'tweetapp:profile' %}"
-                >Profile</a
-              >
+              <a class="nav-link" href="{% url 'logout' %}?next=/">Logout</a>
             </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'tweetapp:listtweet' %}">List</a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'tweetapp:addtweet' %}"
-                >Add Tweet</a
-              >
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'tweetapp:addtweetbyform' %}"
-                >Add Tweet By Form</a
-              >
-            </li>
-            <div>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-              </li>
-
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}?next=/" >Logout</a>
-              </li>
-            </div>
-
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'tweetapp:signup' %}" >Signup</a>
-            </li>
-          </div>
-
-            {% comment %}
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-            </li>
-            {% endcomment %} {% comment %} {% else %}
+            {% else %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'login' %}">Login</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'register' %}">Register</a>
+              <a class="nav-link" href="{% url 'tweetapp:signup' %}">Signup</a>
             </li>
-            {% endcomment %} {% endif %}
+            {% endif %}
           </ul>
         </div>
       </div>

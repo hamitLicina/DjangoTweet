@@ -6,11 +6,13 @@
 <p>Your username and password didn't match. Please try again. </p>
 {% endif %}
 {% if next %}
-    {% if user.is_authenticated %}
-        <h2> Welcome {{user.username}}
-    {% else %}
+{% if user.is_authenticated %}
+  <h2>Welcome back, {{ user.username }}!</h2>
+{% else %}
+  <!-- Show login form -->
     <div class="container" style="border: 4px solid cornflowerblue; padding: 8px;">
         <form method="POST" action="{% url 'login' %}" >
+            <input type="hidden" name="next" value="{{ next }}">
             {% csrf_token %}
         {% for field in form %}
             <div class="mb-3">
