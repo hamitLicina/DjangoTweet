@@ -1,11 +1,10 @@
 from django import forms
-from django.forms import ModelForm
-from tweetapp.models import Tweet
+from .models import Tweet
 
-class AddTweetModelForm(ModelForm):
+class AddTweetModelForm(forms.ModelForm):
     class Meta:
         model = Tweet
-        fields = ['username', 'message']
+        fields = ['message']  # Ensure this matches the fields in the Tweet model
         labels = {
             'username': 'Nickname',
             'message': 'Tweet'

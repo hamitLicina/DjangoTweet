@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from . import models
 from django.urls import reverse, reverse_lazy
 from django import forms
-from tweetapp.forms import AddTweetForm, AddTweetModelForm
+from .forms import AddTweetModelForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic.edit import CreateView
