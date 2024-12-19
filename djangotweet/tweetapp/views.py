@@ -29,20 +29,20 @@ def profile(request):
 
 def addtweetbyform(request):
     if request.method == 'POST':
-        form = forms.AddTweetForm(request.POST)
+        form = AddTweetModelForm(request.POST)
         if form.is_valid():
-            nickname = form.cleaned_data['nickname_input']
-            message = form.cleaned_data['message_input']
-            new_tweet = models.Tweet(nickname=nickname, message=message)
-            new_tweet.save()
+            form.save()
             return redirect(reverse('tweetapp:listtweet'))
         else:
             print("Error in form!")
             return render(request, 'tweetapp/addtweetbyform.html', context={'form': form})
-        
+    else:
+        form = AddTweetModelForm()
+        return render(request, 'tweetapp/addtweetbyform.html', context={'form': form})
+
 def addtweetbymodelform(request):
     if request.method == 'POST':
-        form = forms.AddTweetModelForm(request.POST)
+        form = AddTweetModelForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect(reverse('tweetapp:listtweet'))
@@ -50,7 +50,7 @@ def addtweetbymodelform(request):
             print("Error in form!")
             return render(request, 'tweetapp/addtweetbymodelform.html', context={'form': form})
     else:
-        form = forms.AddTweetModelForm()
+        form = AddTweetModelForm()
         return render(request, 'tweetapp/addtweetbymodelform.html', context={'form': form})
     
 @login_required(login_url='/login')
@@ -64,5 +64,5 @@ def deletetweet(request, tweet_id):
 class SignUpView(CreateView):
     template_name = 'registration/signup.html'
     form_class = UserCreationForm
-    success_url = reverse_lazy('/login')
+    success_url = reverse_lazy('login')
 
