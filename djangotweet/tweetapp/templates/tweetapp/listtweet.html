@@ -1,22 +1,160 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
 {% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if user.is_authenticated %}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <form action="{% url 'tweetapp:addtweet' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <textarea class="form-control" name="message" rows="3" 
+                                      placeholder="What's happening?" maxlength="280"></textarea>
+                            <div class="d-flex justify-content-between mt-2">
+                                <small class="text-muted">280 characters remaining</small>
+                                <button type="submit" class="btn btn-primary">Tweet</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
 
-<h1>List Tweet Page</h1>
+            {% for tweet in tweets %}
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <a href="{% url 'tweetapp:profile' tweet.username.username %}" 
+                           class="text-decoration-none">
+                            <h6 class="card-subtitle mb-2 text-primary">@{{ tweet.username.username }}</h6>
+                        </a>
+                        <small class="text-muted">{{ tweet.date|timesince }} ago</small>
+                    </div>
+                    <p class="card-text">{{ tweet.message }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group flex-grow-1 me-2">
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-primary like-btn" 
+                                    data-tweet-id="{{ tweet.id }}"
+                                    data-liked="{% if user in tweet.likes.all %}true{% else %}false{% endif %}">
+                                <i class="bi {% if user in tweet.likes.all %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
+                                <span class="likes-count">{{ tweet.get_likes_count }}</span>
+                            </button>
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-primary reply-btn"
+                                    data-tweet-id="{{ tweet.id }}"
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#replyModal{{ tweet.id }}">
+                                <i class="bi bi-reply"></i>
+                                <span class="replies-count">{{ tweet.get_replies_count }}</span>
+                            </button>
+                        </div>
+                        {% if tweet.username == user %}
+                        <form action="{% url 'tweetapp:deletetweet' tweet.id %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
-    {% for tweet in tweets %}
-<div class="container" style="width: 50%">
-  <div class="card" style="padding: 10px">
-    <div class="card-header" style="background-color: cornflowerblue">
-      <h4>{{tweet.username}}</h4>
+            <div class="modal fade" id="replyModal{{ tweet.id }}" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Reply to @{{ tweet.username.username }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="original-tweet mb-3 p-3 bg-light rounded">
+                                {{ tweet.message }}
+                            </div>
+                            <textarea class="form-control reply-text" rows="3" maxlength="280" 
+                                      placeholder="Tweet your reply"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary send-reply" data-tweet-id="{{ tweet.id }}">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <div class="card-body">
-      <p class="card-text">{{tweet.message}}</p>
-    </div>
-    {% if tweet.username == user %}
-    <a href="{% url 'tweetapp:deletetweet' tweet_id = tweet.id %}" class="btn btn-danger">Delete</a>
-    {% endif %}
-  </div>
-    {% endfor %} 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.querySelector('textarea[name="message"]');
+    const counter = document.querySelector('.text-muted');
+    
+    if (textarea && counter) {
+        textarea.addEventListener('input', function() {
+            const remaining = 280 - this.value.length;
+            counter.textContent = `${remaining} characters remaining`;
+        });
+    }
+
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const tweetId = this.dataset.tweetId;
+            fetch(`/like/${tweetId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const icon = this.querySelector('i');
+                    const count = this.querySelector('.likes-count');
+                    if (data.liked) {
+                        icon.classList.replace('bi-heart', 'bi-heart-fill');
+                    } else {
+                        icon.classList.replace('bi-heart-fill', 'bi-heart');
+                    }
+                    count.textContent = data.likes_count;
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.send-reply').forEach(button => {
+        button.addEventListener('click', function() {
+            const tweetId = this.dataset.tweetId;
+            const modal = this.closest('.modal');
+            const replyText = modal.querySelector('.reply-text').value;
+            
+            fetch(`/reply/${tweetId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${encodeURIComponent(replyText)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const repliesCount = document.querySelector(
+                        `button[data-tweet-id="${tweetId}"] .replies-count`
+                    );
+                    repliesCount.textContent = data.replies_count;
+                    
+                    const modalInstance = bootstrap.Modal.getInstance(modal);
+                    modalInstance.hide();
+                    modal.querySelector('.reply-text').value = '';
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

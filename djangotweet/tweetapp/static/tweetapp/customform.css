@@ -9,3 +9,43 @@
     height: auto;
     padding: 10px;
 }
+
+.search-highlight {
+    background-color: #fff3cd;
+    padding: 2px;
+    border-radius: 3px;
+}
+
+.search-result-card {
+    transition: transform 0.2s;
+}
+
+.search-result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.search-form input {
+    border-radius: 20px 0 0 20px;
+}
+
+.search-form button {
+    border-radius: 0 20px 20px 0;
+}
+
+.btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-group .btn {
+    flex: 1;
+}
+
+.like-btn.liked {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.modal .original-tweet {
+    border-left: 4px solid var(--bs-primary);
+}
